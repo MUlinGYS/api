@@ -1,21 +1,13 @@
-//引入包
-const express = require('express');
-
 const bodyParser = require('body-parser');
-
-//实例化服务器
+const express = require('express');
+const serverless = require('serverless-http');
 const app = express();
 
-//定义端口
-const port = 3000;
-
-//解析post请求
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-//模拟数据库数据
 let ArticleContent = [
-        {
+   {
         id:1,
         essaysTitle: "这是一篇测试内容",
         detail: "长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试长文本测试",
@@ -111,9 +103,9 @@ let ArticleContent = [
         author: "陈凯",
         time: "2020-05-10 10:00:00"
         }
-]
+];
 
-app.get('/', (req, res) => {
+app.get('/api/getArticles', (req, res) => {
     let id = req.query.id;
 
     if (typeof id === 'undefined' || id === null) {
@@ -133,17 +125,14 @@ app.get('/', (req, res) => {
 }
 });
 
-app.post('/', (req, res) => {
-    let data = req.body;
-    console.log(data,'data');
-    ArticleContent.push(data);
-    res.send({
-        message: 'post接口请求成功',
-        code: 200,
-        data: ArticleContent
-    });
-});
+module.exports = app;
 
-app.listen(port, () => {
-    console.log(`服务器启动成功，端口为：${port}`);
-});
+if (process.env.VERCEL) {
+    module.exports.handler = serverless(app);
+}
+
+//    const port = process.env.PORT || 3000;
+
+//    app.listen(port, () => {
+//      console.log(`Server is running on port ${port}`);
+//    });
